@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Anima Fovenda",
+    "description": "Memory review console: pending queue, search, memo, rules, persona snapshot diff, decay lake. Memory files are written only through the CLI; the rules file is editable in place with automatic backups and conflict detection."
+  }
+}

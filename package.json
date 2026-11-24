@@ -1,0 +1,40 @@
+{
+  "name": "anima-fovenda",
+  "version": "0.2.7",
+  "description": "Memory review console for DeepSeek Harness: pending facts, decay, facts/self/voices, memo, rules, and search.",
+  "license": "MIT",
+  "author": "桜坂珠洲音",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/REPLACE-ME/anima-fovenda.git"
+  },
+  "homepage": "https://github.com/REPLACE-ME/anima-fovenda#readme",
+  "bugs": {
+    "url": "https://github.com/REPLACE-ME/anima-fovenda/issues"
+  },
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "memory",
+    "memory-review"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "files": [
+    "plugin",
+    "runtime",
+    "preview",
+    "unit-test.mjs",
+    "README.md",
+    "README.zh-CN.md",
+    "CHANGELOG.md",
+    "SECURITY.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node unit-test.mjs",
+    "test:rules": "node runtime/tools/test-rules.mjs"
+  }
+}

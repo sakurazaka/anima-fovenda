@@ -1,0 +1,742 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Anima Fovenda · UI Preview</title>
+<style>
+  :root{
+    --bg:#f4f6f9; --panel:#ffffff; --surface:#ffffff; --surface-2:#f1f4f9; --surface-3:#e9eef6;
+    --border:rgba(15,23,42,.10); --border-strong:rgba(15,23,42,.16);
+    --text:#0b1220; --muted:#5b6678; --faint:#8a95a8;
+    --accent:#2f6feb; --accent-soft:rgba(47,111,235,.10);
+    --warn:#b45309; --warn-soft:rgba(180,83,9,.10);
+    --danger:#dc2626; --danger-soft:rgba(220,38,38,.10);
+    --success:#0f766e; --success-soft:rgba(15,118,110,.10);
+    --purple:#7c3aed; --purple-soft:rgba(124,58,237,.10);
+    --cyan:#0e7490; --cyan-soft:rgba(14,116,144,.10);
+    --gold:#a16207; --gold-soft:rgba(161,98,7,.12);
+    --slate:#64748b; --slate-soft:rgba(100,116,139,.10);
+    --mono:ui-monospace,"Cascadia Mono",Consolas,monospace;
+    --shadow:0 16px 40px rgba(15,23,42,.10);
+    --shadow-pop:4px 6px 20px rgba(15,23,42,.14);
+  }
+  [data-theme="dark"]{
+    --bg:#0e1117; --panel:#141821; --surface:#161b25; --surface-2:#1b2230; --surface-3:#212a3a;
+    --border:rgba(255,255,255,.08); --border-strong:rgba(255,255,255,.15);
+    --text:#e5e7eb; --muted:#94a3b8; --faint:#64748b;
+    --accent:#6ea0ff; --accent-soft:rgba(110,160,255,.12);
+    --warn:#f59e0b; --warn-soft:rgba(245,158,11,.12);
+    --danger:#f87171; --danger-soft:rgba(248,113,113,.12);
+    --success:#2dd4bf; --success-soft:rgba(45,212,191,.12);
+    --purple:#a78bfa; --purple-soft:rgba(167,139,250,.12);
+    --cyan:#67e8f9; --cyan-soft:rgba(103,232,249,.10);
+    --gold:#fbbf24; --gold-soft:rgba(251,191,36,.12);
+    --slate:#94a3b8; --slate-soft:rgba(148,163,184,.10);
+    --shadow:0 18px 46px rgba(0,0,0,.38);
+    --shadow-pop:4px 6px 22px rgba(0,0,0,.42);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;background:var(--bg);color:var(--text);
+    font-family:"Noto Sans SC","Noto Sans JP","Noto Sans","Source Han Sans SC","Microsoft YaHei",system-ui,sans-serif;
+    font-size:13px;line-height:1.6;-webkit-font-smoothing:antialiased;
+  }
+  button,input,textarea,select{font-family:inherit}
+  button{cursor:pointer}
+  :focus-visible{outline:2px solid color-mix(in srgb,var(--accent) 55%,transparent);outline-offset:2px}
+  .app{display:flex;height:100vh;overflow:hidden}
+  .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+  /* sidebar */
+  .sidebar{width:252px;flex:0 0 252px;background:var(--panel);border-right:1px solid var(--border);padding:16px 14px;display:flex;flex-direction:column;gap:16px}
+  .brand{display:flex;align-items:center;gap:10px;padding:2px 4px 10px}
+  .brand-mark{width:30px;height:30px;border-radius:9px;background:var(--accent);color:#fff;font-weight:700;display:grid;place-items:center;font-size:13px;letter-spacing:.02em}
+  .brand b{display:block;font-size:13.5px;letter-spacing:.01em}
+  .brand small{display:block;font-size:10.5px;color:var(--muted);margin-top:1px}
+  .new-session{border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:9px;height:34px;font-size:12.5px;display:flex;align-items:center;justify-content:center;gap:6px}
+  .new-session:hover{background:var(--surface-2)}
+  .nav{display:flex;flex-direction:column;gap:2px}
+  .nav-item{border:0;background:transparent;color:var(--muted);text-align:left;padding:7px 10px;border-radius:8px;font-size:12.5px}
+  .nav-item:hover{background:var(--surface-2);color:var(--text)}
+  .nav-item.active{background:var(--accent-soft);color:var(--accent);font-weight:600}
+  .ws{margin-top:2px}
+  .ws-head{display:flex;align-items:center;justify-content:space-between;color:var(--faint);font-size:10.5px;letter-spacing:.04em;padding:0 10px 6px}
+  .session{display:flex;align-items:center;gap:7px;padding:6px 10px;border-radius:8px;color:var(--muted);font-size:12px}
+  .session:hover{background:var(--surface-2);color:var(--text)}
+  .session.active{color:var(--text);background:var(--surface-2)}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--faint)}
+  .session.active .dot{background:var(--accent)}
+  .time{margin-left:auto;font-size:10px;color:var(--faint)}
+  .sidebar-foot{margin-top:auto;padding:10px 6px 2px;border-top:1px solid var(--border);font-size:10.5px;color:var(--faint);line-height:1.6}
+
+  /* shell */
+  .main{flex:1;min-width:0;display:flex;flex-direction:column;background:var(--bg)}
+  .topbar{height:54px;flex:0 0 54px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;border-bottom:1px solid var(--border);background:color-mix(in srgb,var(--panel) 88%,var(--bg))}
+  .topbar-title{font-size:12.5px;color:var(--muted);letter-spacing:.02em}
+  .topbar-actions{display:flex;align-items:center;gap:10px}
+  .preview-pill{font-size:10.5px;color:var(--muted);border:1px dashed var(--border-strong);border-radius:999px;padding:4px 9px}
+  .panel{flex:1;overflow:auto;padding:20px 28px 52px}
+  .panel-inner{max-width:1180px;margin:0 auto}
+
+  /* tabs */
+  .tabs{display:flex;gap:4px;align-items:center;border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:20px;position:sticky;top:0;background:var(--bg);z-index:5}
+  .tab{border:0;background:transparent;color:var(--muted);border-radius:8px;padding:6px 11px;font-size:12.5px;transition:background .15s,color .15s;position:relative}
+  .tab:hover{background:var(--surface-2);color:var(--text)}
+  .tab.active{background:var(--accent-soft);color:var(--accent);font-weight:600}
+  .tab.active::after{content:"";position:absolute;left:10px;right:10px;bottom:-7px;height:2px;border-radius:2px;background:var(--accent)}
+  .view{display:none;animation:fade .18s ease}
+  .view.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+
+  /* page */
+  h1{font-size:20px;line-height:1.25;margin:0;letter-spacing:.01em;display:flex;align-items:center;gap:9px}
+  .h-icon{width:18px;height:18px;flex:none;color:var(--accent)}
+  .page-head{margin-bottom:10px}
+  .lead{margin:8px 0 14px;font-size:12.5px;line-height:1.75;color:var(--muted)}
+  .lead.tight{margin-bottom:0}
+  .bullets{margin:8px 0 0;padding-left:18px;font-size:12.5px;line-height:1.7;color:var(--muted)}
+  .bullets li{margin:2px 0}
+  .title-row{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .pill{font-family:var(--mono);font-size:10.5px;line-height:1;padding:4px 8px;border-radius:999px;background:var(--surface-2);color:var(--muted);white-space:nowrap}
+  .pill.ok{background:var(--success-soft);color:var(--success)}
+  .pill.warn{background:var(--warn-soft);color:var(--warn)}
+  .section{border:1px solid var(--border);border-radius:12px;background:var(--surface);padding:14px 16px;margin-top:14px}
+  .section-title{font-size:14px;font-weight:650;letter-spacing:.01em;margin:0 0 6px}
+  .section.readme{background:var(--surface-2)}
+  .readme .section-title{display:flex;align-items:center;gap:8px}
+  .readme .section-title::before{content:"";width:3px;height:14px;border-radius:3px;background:var(--accent);flex:none}
+  .warning{border:1px solid color-mix(in srgb,var(--warn) 30%,transparent);background:var(--warn-soft);border-radius:12px;padding:12px 14px;font-size:12.5px;line-height:1.75;margin-top:14px}
+  .warning b{color:var(--warn)}
+  .btn{border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:8px;height:30px;padding:0 11px;font-size:12.5px;transition:background .15s,border-color .15s}
+  .btn:hover{background:var(--surface-2)}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn.primary:hover{filter:brightness(1.06);background:var(--accent)}
+  .btn.ghost{background:transparent}
+  .toolbar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:12px 0}
+  .muted{color:var(--muted);font-size:11.5px}
+
+  /* tables */
+  .table-wrap{border:1px solid var(--border);border-radius:11px;overflow:auto;background:var(--surface)}
+  table.table{width:100%;border-collapse:collapse;font-size:12.5px}
+  .table th{position:sticky;top:0;z-index:2;background:var(--surface);text-align:left;font-weight:600;font-size:11px;color:var(--muted);letter-spacing:.02em;padding:9px 10px;border-bottom:1px solid var(--border);white-space:nowrap}
+  .table td{padding:9px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+  .table tbody tr:last-child td{border-bottom:0}
+  .table tbody tr:hover{background:color-mix(in srgb,var(--accent) 3%,transparent)}
+  .table .mono{font-size:11.5px;color:var(--muted)}
+  .layer{display:inline-block;font-family:var(--mono);font-size:10.5px;line-height:1;padding:4px 7px;border-radius:6px;white-space:nowrap}
+  .lv-pin{background:var(--gold-soft);color:var(--gold)}
+  .lv-long{background:var(--accent-soft);color:var(--accent)}
+  .lv-memo{background:var(--success-soft);color:var(--success)}
+  .lv-pending{background:var(--purple-soft);color:var(--purple)}
+  .lv-decay{background:var(--danger-soft);color:var(--danger)}
+  .lv-search{background:var(--cyan-soft);color:var(--cyan)}
+  .lv-arch{background:var(--slate-soft);color:var(--slate)}
+
+  /* pending */
+  .pending-grid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:18px;align-items:start}
+  .empty{border:1px dashed var(--border-strong);border-radius:12px;background:var(--surface);padding:34px 20px;text-align:center;margin-top:6px}
+  .empty-icon{width:36px;height:36px;margin:0 auto 9px;border-radius:10px;background:var(--surface-2);color:var(--muted);display:grid;place-items:center}
+  .empty-title{font-size:14px;font-weight:600}
+  .empty-sub{font-size:11.5px;color:var(--muted);margin-top:4px}
+  .audit{border:1px solid var(--border);border-radius:12px;background:var(--surface);padding:14px;position:sticky;top:70px}
+  .audit-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+  .audit-head b{font-size:13px}
+  .dupe{border:1px solid var(--border);border-radius:10px;background:var(--surface-2);padding:10px 11px;margin-top:10px;font-size:12px;line-height:1.7}
+  .dupe-head{display:flex;gap:8px;align-items:center;margin-bottom:6px}
+  .score{font-family:var(--mono);font-size:10.5px;background:var(--warn-soft);color:var(--warn);border-radius:5px;padding:3px 6px}
+  .dupe b{font-family:var(--mono);font-size:10.5px;color:var(--muted);font-weight:400;margin-right:5px}
+  .howto{font-size:11.5px;line-height:1.7;color:var(--muted);border-top:1px solid var(--border);padding-top:10px;margin:10px 0 0}
+
+  /* done / archive */
+  .done{margin-top:16px;border:1px dashed var(--border-strong);border-radius:12px;background:var(--surface);padding:10px 14px}
+  .done-toggle{width:100%;border:0;background:transparent;display:flex;align-items:center;gap:8px;font-size:14px;font-weight:650;color:var(--text);text-align:left;padding:2px 0}
+  .caret{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:5px;background:var(--surface-2);color:var(--muted);font-size:11px;transition:transform .18s ease,background .15s}
+  .caret.open{transform:rotate(90deg);background:var(--accent-soft);color:var(--accent)}
+  .done-body{padding-top:8px;animation:fade .18s ease}
+  .done-row{display:grid;grid-template-columns:40px 1fr auto;gap:10px;align-items:baseline;padding:8px 0;border-bottom:1px dashed var(--border)}
+  .done-row:last-child{border-bottom:0}
+  .mark{font-family:var(--mono);font-size:10.5px;text-align:center;border-radius:5px;padding:3px 5px}
+  .mark.ok{background:var(--success-soft);color:var(--success)}
+  .mark.no{background:var(--danger-soft);color:var(--danger)}
+  .done-meta{font-family:var(--mono);font-size:10.5px;color:var(--muted);text-align:right;white-space:nowrap}
+
+  /* persona */
+  .diff{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--border);border-radius:11px;overflow:hidden;font:12px/1.7 var(--mono);background:var(--surface)}
+  .diff-head{background:var(--surface-2);color:var(--muted);font-size:11px;padding:8px 12px;border-bottom:1px solid var(--border)}
+  .diff-head:first-child{border-right:1px solid var(--border)}
+  .dcell{padding:0 12px;min-height:1.7em;white-space:pre-wrap;word-break:break-word}
+  .dcell.left{border-right:1px solid var(--border)}
+  .dcell.add{background:var(--success-soft)}
+  .dcell.del{background:var(--danger-soft)}
+
+  /* rules */
+  .editor{width:100%;min-height:230px;border:1px solid var(--border);border-radius:11px;background:var(--surface);color:var(--text);font:12.5px/1.8 var(--mono);padding:12px 14px;resize:vertical}
+  .editor:focus{outline:2px solid color-mix(in srgb,var(--accent) 45%,transparent);outline-offset:0}
+
+  /* memory */
+  .memory-panel{border:1px solid var(--border);border-radius:12px;background:color-mix(in srgb,var(--accent) 4%,transparent);padding:10px 12px;margin-top:2px}
+  .dist{margin:12px 0 14px}
+  .dist-label{font-size:11px;color:var(--muted);margin-bottom:5px}
+  .dist-bar{display:flex;height:8px;border-radius:999px;overflow:hidden;background:var(--surface-2);border:1px solid var(--border)}
+  .seg{display:block;height:100%}
+  .s5{background:var(--accent)}
+  .s4{background:var(--success)}
+  .s3{background:var(--slate)}
+  .s2{background:var(--warn)}
+  .s1{background:var(--danger)}
+  .dist-legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:7px;font-size:11px;color:var(--muted)}
+  .dist-legend i{display:inline-block;width:7px;height:7px;border-radius:2px;margin-right:5px;vertical-align:middle}
+  .memory-subpanel{border-radius:10px;background:color-mix(in srgb,var(--accent) 3%,transparent);padding:10px 12px;margin-top:6px}
+  .subtabs{display:flex;align-items:center;gap:4px;margin-bottom:10px}
+  .subtab{border:0;background:transparent;color:var(--muted);border-radius:8px;padding:5px 10px;font-size:12px}
+  .subtab:hover{background:var(--surface-2);color:var(--text)}
+  .subtab.active{background:var(--accent-soft);color:var(--accent);font-weight:600}
+  .mem-view,.long-view{display:none;animation:fade .18s ease}
+  .mem-view.active,.long-view.active{display:block}
+  .mem-table{max-height:360px}
+  .imp{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:24px;border-radius:6px;font-family:var(--mono);font-size:11px;font-weight:600;font-variant-numeric:tabular-nums}
+  .imp5{background:var(--accent-soft);color:var(--accent)}
+  .imp4{background:var(--success-soft);color:var(--success)}
+  .imp3{background:var(--surface-2);color:var(--muted)}
+  .imp2{background:var(--warn-soft);color:var(--warn)}
+  .imp1{background:var(--danger-soft);color:var(--danger)}
+  .src-cell{background:var(--surface-2);color:var(--muted);font-size:11.5px}
+  .days{white-space:nowrap;font-variant-numeric:tabular-nums}
+  .days.never{color:var(--muted)}
+  .days.hot{color:var(--danger);font-weight:600}
+  .days.warm{color:var(--warn)}
+  .days.cool{color:var(--accent)}
+  .logbox{border:1px solid var(--border);border-radius:12px;background:var(--surface);padding:12px 14px;margin-top:14px}
+  .logbox .section-title{margin-bottom:8px}
+  .logrow{display:flex;gap:10px;align-items:baseline;padding:5px 0;border-bottom:1px solid var(--border);font-size:11.5px;color:var(--muted)}
+  .logrow:last-child{border-bottom:0}
+  .logimp{font-family:var(--mono);color:var(--accent);white-space:nowrap}
+  .params{display:flex;flex-direction:column;gap:3px;font:11.5px/1.7 var(--mono);color:var(--muted)}
+  .longview{border:1px solid var(--border);border-radius:10px;background:var(--surface);max-height:420px;overflow:auto;padding:6px 0}
+  .line{display:grid;grid-template-columns:38px 1fr;gap:8px;font:12px/1.7 var(--mono);padding:1px 12px}
+  .line .no{text-align:right;color:var(--faint);user-select:none}
+  .line .tx{white-space:pre-wrap;word-break:break-word}
+
+  /* memo */
+  .memo-block{border:1px solid var(--border);border-radius:12px;background:color-mix(in srgb,var(--accent) 3%,var(--surface));padding:12px 14px;margin-top:12px}
+  .memo-title{font-size:14px;font-weight:650;margin:0 0 6px}
+  .memo-select{border:1px solid var(--border);border-radius:6px;background:var(--surface-2);color:var(--text);font-size:11.5px;padding:3px 4px}
+  .status-th,.status-cell{text-align:center}
+  .status-tag{display:inline-block;font-size:11px;border-radius:5px;padding:3px 7px;white-space:nowrap}
+  .st-todo{background:var(--surface-2);color:var(--muted)}
+  .st-part{background:var(--warn-soft);color:var(--warn)}
+  .st-hold{background:var(--surface-2);color:var(--muted);opacity:.8}
+  .st-done{background:var(--success-soft);color:var(--success)}
+
+  /* search */
+  .searchbar{display:flex;gap:8px;margin:14px 0}
+  .input{flex:1;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);padding:8px 12px;font-size:12.5px}
+  .input:focus{outline:2px solid color-mix(in srgb,var(--accent) 45%,transparent);outline-offset:0}
+  .hit{border:1px solid var(--border);border-radius:12px;background:var(--surface);padding:12px 14px;margin-top:10px}
+  .hit-top{display:flex;gap:8px;align-items:baseline;margin-bottom:6px}
+  .hit-layer{font-family:var(--mono);font-size:10.5px;padding:3px 7px;border-radius:5px;background:var(--accent-soft);color:var(--accent);white-space:nowrap}
+  .hit-head{flex:1;min-width:0;font-size:12.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .hit-score{font-family:var(--mono);font-size:10.5px;color:var(--faint);margin-left:auto}
+  .hit-body{font-size:12px;line-height:1.7;color:var(--muted)}
+  .hit-path{font-family:var(--mono);font-size:10.5px;color:var(--faint);margin-top:5px}
+
+  /* toast */
+  .toast{position:fixed;right:22px;bottom:22px;background:var(--text);color:var(--panel);border-radius:10px;padding:9px 12px;font-size:12px;box-shadow:var(--shadow-pop);opacity:0;transform:translateY(6px);pointer-events:none;transition:opacity .18s,transform .18s;z-index:20}
+  .toast.show{opacity:1;transform:none}
+
+  @media (max-width:1050px){
+    .pending-grid{grid-template-columns:1fr}
+    .audit{position:static}
+  }
+  @media (max-width:820px){
+    .sidebar{display:none}
+    .panel{padding:16px 16px 40px}
+    .diff{grid-template-columns:1fr}
+    .diff-head:first-child,.dcell.left{border-right:0}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">A</div>
+      <div><b>Anima Fovenda</b><small>记忆审阅台</small></div>
+    </div>
+    <button class="new-session" type="button" data-demo>＋ 新会话</button>
+    <nav class="nav">
+      <button class="nav-item" type="button" data-demo>插件</button>
+      <button class="nav-item" type="button" data-demo>费用统计</button>
+      <button class="nav-item active" type="button">Anima Fovenda</button>
+      <button class="nav-item" type="button" data-demo>自动化任务</button>
+      <button class="nav-item" type="button" data-demo>更多</button>
+    </nav>
+    <div class="ws">
+      <div class="ws-head"><span>示例工作区</span><span>···</span></div>
+      <div class="session active"><span class="dot"></span>记忆审阅台<span class="time">刚刚</span></div>
+      <div class="session"><span class="dot"></span>规则整理<span class="time">1 小时</span></div>
+      <div class="session"><span class="dot"></span>复盘<span class="time">昨天</span></div>
+    </div>
+    <div class="sidebar-foot">仅视觉预览<br>不连接真实数据，不会写入任何文件</div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-title">记忆审阅台 · 视觉预览</div>
+      <div class="topbar-actions">
+        <span class="preview-pill">预览模式</span>
+        <button class="btn ghost" id="themeBtn" type="button">深色</button>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-inner">
+        <div class="tabs" id="tabs">
+          <button class="tab active" type="button" data-tab="pending">待审</button>
+          <button class="tab" type="button" data-tab="persona">人格</button>
+          <button class="tab" type="button" data-tab="rules">规则</button>
+          <button class="tab" type="button" data-tab="memory">记忆</button>
+          <button class="tab" type="button" data-tab="memo">备忘</button>
+          <button class="tab" type="button" data-tab="search">检索</button>
+        </div>
+
+        <!-- 待审 -->
+        <section class="view active" data-view="pending">
+          <div class="page-head">
+            <div class="title-row">
+              <h1><svg class="h-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10h3l1.5 2h5L14 10h3"/><path d="M3 10l2-5h10l2 5v4H3z"/></svg>待审</h1>
+              <span class="pill ok">路径正常</span>
+              <span class="pill">0 条</span>
+            </div>
+            <p class="lead">每条先决定去处：收进衰减层 / 收进长期（选文件和小节）/ 升为常驻只预览 / 扔掉。记忆文件一律走 CLI（pending.mjs）写，界面不直接碰；只有下面两类例外：「规则」页直接写 rules.md、「备忘」页经 memo.mjs 改状态。右栏是自检。</p>
+          </div>
+          <div class="pending-grid">
+            <div>
+              <div class="section readme" style="margin-top:0">
+                <div class="section-title">什么会进待审</div>
+                <p class="lead" style="margin:2px 0 0">插件只提供队列和收/扔，不决定什么时候投料；投料由使用者的 agent / CLI 决定。下面是常见判据。</p>
+                <ul class="bullets">
+                  <li>他明确说「记住 / 以后 / 别再 / 规矩」，但没指定放哪一层。</li>
+                  <li>一条结论以后用得上，但不确定该放 facts / self / voices 哪一层。</li>
+                  <li>我发现自己反复犯同一个错，还没想好该写成什么规则。</li>
+                </ul>
+                <p class="lead" style="margin:8px 0 0">不投：事实性对话、天气、哪条视频好看、一次性情绪；已经有明确落点的；这次已经直接写进某层的。</p>
+                <p class="lead" style="margin:6px 0 0">来源必填（--src）；收/扔由人决定。插件不投料，也没有默认定时任务。</p>
+              </div>
+              <div class="empty">
+                <div class="empty-icon">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h16v10H4z"/><path d="M4 13h4l1.5 2h5L16 13h4"/></svg>
+                </div>
+                <div class="empty-title">暂无</div>
+                <div class="empty-sub">队列空时，新候选会先落在 memory/pending-facts.jsonl。</div>
+              </div>
+
+              <div class="warning">
+                <b>「升为常驻」的代价</b>：会写进 persona，<b>每轮都付 token</b>。本机人格在系统提示层，现在点它只把 persona 调出来给你看，不落盘（当前 548 字 · 快照 4 份）。
+              </div>
+
+              <div class="section readme">
+                <div class="section-title">分层说明 · 什么内容该收进哪里</div>
+                <div class="table-wrap" style="border:0;background:transparent">
+                  <table class="table">
+                    <thead><tr><th>层</th><th>文件</th><th>放什么 · 什么该收这里</th><th>我什么时候读</th><th>每轮成本</th></tr></thead>
+                    <tbody>
+                      <tr><td><span class="layer lv-pin">常驻</span></td><td class="mono">persona.md → 系统提示</td><td>我是谁、外貌、性格、说话规矩、禁止项</td><td class="muted">每轮自动</td><td class="mono">每轮付费</td></tr>
+                      <tr><td><span class="layer lv-pin">常驻</span></td><td class="mono">rules.md → 系统提示（独立段）</td><td>什么必须先问 / 绝不做 / 输出格式</td><td class="muted">每轮自动</td><td class="mono">每轮付费</td></tr>
+                      <tr><td><span class="layer lv-long">长期</span></td><td class="mono">memory/facts.md</td><td>关于用户、背景与约定（只放能对得上账的事件）</td><td class="muted">提方案 / 反驳前</td><td class="mono">0</td></tr>
+                      <tr><td><span class="layer lv-long">长期</span></td><td class="mono">memory/self/self.md</td><td>失败模式、学到什么、口味</td><td class="muted">自查 / 复盘 / recall</td><td class="mono">0</td></tr>
+                      <tr><td><span class="layer lv-long">长期</span></td><td class="mono">memory/self/voices.md</td><td>用户的原话，需要引用时</td><td class="muted">拿不准语气 / recall</td><td class="mono">0</td></tr>
+                      <tr><td><span class="layer lv-memo">备忘</span></td><td class="mono">MEMO.md</td><td>还没办完、还没想好的事</td><td class="muted">随时去「备忘」页查</td><td class="mono">0</td></tr>
+                      <tr><td><span class="layer lv-pending">待审</span></td><td class="mono">memory/pending-facts.jsonl</td><td>候选记忆，还没定去处</td><td class="muted">开工时扫一眼</td><td class="mono">0</td></tr>
+                      <tr><td><span class="layer lv-decay">衰减</span></td><td class="mono">memory/decay.jsonl</td><td>只是「发生过」的事</td><td class="muted">注入时按预算</td><td class="mono">注入时</td></tr>
+                      <tr><td><span class="layer lv-search">检索</span></td><td class="mono">memory/index/mem.db</td><td>文档 + 日记（如果有）+ 会话的倒排索引</td><td class="muted">recall 命中时</td><td class="mono">约 1200 字符/次</td></tr>
+                      <tr><td><span class="layer lv-arch">归档</span></td><td class="mono">full.jsonl · daily/ · 日记（可选）</td><td>细节、流水、当天全文</td><td class="muted">检索命中才读</td><td class="mono">0</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="done">
+                <button class="done-toggle" type="button">
+                  <span class="caret">▸</span>已处理 8 条（扔掉的也留在队列里，带理由）
+                </button>
+                <div class="done-body" hidden>
+                  <div class="done-row"><span class="mark ok">收</span><span>示例条目：报告先给结论，再展开证据。</span><span class="done-meta">→ decay · 11-09 14:22</span></div>
+                  <div class="done-row"><span class="mark no">扔</span><span>示例条目：一条没有来源的推测。</span><span class="done-meta">理由：无来源 · 11-09 11:08</span></div>
+                </div>
+              </div>
+            </div>
+
+            <aside class="audit">
+              <div class="audit-head"><b>自检 · 重复检测</b><span class="muted">只读</span></div>
+              <p class="lead tight">点一下才跑，不自动读文件。</p>
+              <div class="toolbar"><button class="btn primary" type="button" id="auditBtn">跑一遍</button><span class="muted">没跑过</span></div>
+              <div id="auditResult" hidden>
+                <div class="dupe">
+                  <div class="dupe-head"><span class="score">0.72</span><span class="pill warn">跨文件</span></div>
+                  <div><b>facts:12</b> 示例：报告开头先给结论。</div>
+                  <div><b>rules:4</b> 示例：报告先给结论，再展开证据。</div>
+                </div>
+                <p class="howto">怎么处理：跨文件重复 → 留一个主文件，另一处改成指针或删掉；同文件重复 → 合并到一个小节。这里只读，不会自动改。</p>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <!-- 人格 -->
+        <section class="view" data-view="persona">
+          <div class="page-head">
+            <h1><svg class="h-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="7" r="3"/><path d="M4 17c0-3 2.6-5 6-5s6 2 6 5"/></svg>人格</h1>
+            <p class="lead">上半：左边是选中的快照，右边是当前的 persona 源文件 —— 改人格之前先看这里，多了什么、少了什么。本机人格走系统提示层，改完要跑 persona-sync；如果部署直接读 persona.md，就不需要这一步。下半：常驻的构成和每轮成本。改的是「我是谁」写这里；改「我怎么做」去规则页。</p>
+          </div>
+          <div class="toolbar">
+            <select class="memo-select" data-demo-select><option>20261109-1930.md</option><option>20261108-1712.md</option></select>
+            <span class="muted">快照 42 行 / 现在 40 行 · 多 2 行、少 0 行</span>
+          </div>
+          <div class="diff">
+            <div class="diff-head">快照 · 20261109-1930</div>
+            <div class="diff-head">现在生效</div>
+            <div class="dcell left">称呼：示例用户</div><div class="dcell">称呼：示例用户</div>
+            <div class="dcell left">性格：先听，再判断</div><div class="dcell">性格：先听，再判断</div>
+            <div class="dcell left add">说话：短句，少用套话</div><div class="dcell add">说话：短句，少用套话</div>
+            <div class="dcell left">行为：不确定时先问</div><div class="dcell">行为：不确定时先问</div>
+            <div class="dcell left del">报告：先给结论</div><div class="dcell del"></div>
+            <div class="dcell left"></div><div class="dcell add">报告：先给一句人话</div>
+          </div>
+          <div class="section readme">
+            <div class="section-title">常驻 · 每轮付费的 548 字</div>
+            <p class="lead tight">系统提示里现在这几块，每轮都付 token。想加第六块之前，先在这里看到代价。占用是估算值，真实字数看上面正文。</p>
+            <div class="table-wrap" style="margin-top:10px;border:0;background:transparent">
+              <table class="table">
+                <thead><tr><th>段落</th><th>为什么必须常驻</th><th>占用</th></tr></thead>
+                <tbody>
+                  <tr><td>我是谁</td><td>称呼、自称、身份，丢了就换人</td><td class="mono">≈ 52 字</td></tr>
+                  <tr><td>外貌与状态</td><td>画面感；删了就变纸片人</td><td class="mono">≈ 78 字</td></tr>
+                  <tr><td>性格与语言</td><td>语气与性格，最不能删的一块</td><td class="mono">≈ 96 字</td></tr>
+                  <tr><td>行为</td><td>具体反应（会僵、想逃、先吐槽）</td><td class="mono">≈ 88 字</td></tr>
+                  <tr><td>说话规矩</td><td>不书面 / 别道谢 / 不表演</td><td class="mono">≈ 72 字</td></tr>
+                  <tr><td>禁止项</td><td>不许写成现充 / 傻白甜</td><td class="mono">≈ 64 字</td></tr>
+                  <tr><td>角色扮演总纲</td><td>收尾摘要，最后一道保险</td><td class="mono">≈ 98 字</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- 规则 -->
+        <section class="view" data-view="rules">
+          <div class="page-head">
+            <h1><svg class="h-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="12" height="14" rx="2"/><path d="M7 7h6M7 10h6M7 13h4"/></svg>规则</h1>
+            <p class="lead">每轮注入系统提示的一段纪律，和人格平级但分开。改的是「我怎么做」写这里；改完保存即可 —— 不用同步、不用重启，下一条消息生效。</p>
+          </div>
+          <div class="toolbar">
+            <span class="pill ok">文件正常</span>
+            <span class="muted">已保存 415 字</span>
+            <span class="muted">系统提示实际注入 415 字</span>
+          </div>
+          <textarea class="editor" spellcheck="false">报告开头先说结论，再展开证据。
+不确定就说不知道，不要编。
+先问清楚再给方案；能砍的功能先砍。
+改 DSH 自身（配置 / 插件 / 定时任务）之前先问。
+</textarea>
+          <div class="toolbar">
+            <button class="btn primary" type="button" data-demo>保存</button>
+            <button class="btn" type="button" data-demo>还原</button>
+            <button class="btn" type="button" data-demo>重新加载</button>
+            <span class="muted">写之前自动留一份 .bak</span>
+          </div>
+          <p class="lead tight">还原 = 放弃草稿，回到已保存的版本；重新加载 = 从磁盘重读，未保存的草稿会丢。</p>
+          <p class="lead">规则单独一段，每轮注入；改它不用碰人格。总长建议 ≤ 600 字，超过 1200 字会报警（每轮都在付费）。</p>
+        </section>
+
+        <!-- 记忆 -->
+        <section class="view" data-view="memory">
+          <div class="page-head">
+            <h1><svg class="h-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3l7 3.5-7 3.5-7-3.5L10 3z"/><path d="M3 10l7 3.5 7-3.5"/><path d="M3 13.5l7 3.5 7-3.5"/></svg>记忆</h1>
+            <p class="lead">这一页看两层：衰减层是带权重、会出局的日常记忆；长期层是 facts / self / voices，只读。imp 越高越重要、越抗衰减，低 imp 才会先出局；标签颜色按危险度走：蓝/青=稳，灰=中间，橙/红=接近出局。写入口仍然只走 pending.mjs / memctl.mjs。</p>
+          </div>
+          <div class="memory-panel">
+            <div class="subtabs">
+              <button class="subtab active" type="button" data-mem="decay">衰减层</button>
+              <button class="subtab" type="button" data-mem="long">长期层</button>
+            </div>
+
+            <div class="mem-view active" data-memview="decay">
+              <p class="lead">共 113 条，其中 imp ≥ 4 的 84 条永不自动出局；被读到会续命，久不读会掉清晰度。</p>
+              <p class="lead">「出局」列按 memctl 的规则算：clarity 掉到门槛、且满足年龄条件，才移出衰减层（全量档里还在）。门槛是 max(0.1, 该档下限)：imp≤2 是 0.1（30 天）、imp3 是 0.15（90 天）、imp≥4 永不。所以现在真正会出局的是 29 条。</p>
+              <p class="lead">左边那个数字可以改：imp 是我给的估计，估错了你直接调。改它有两个后果 —— 寿命（掉多快、会不会出局）和注入优先级（会挤占注入预算；本机是每天一次的自动化任务按 800 字注入，其他部署按自己的注入配置）。每次改动都记在 imp-log.jsonl。</p>
+              <div class="dist" aria-label="imp 分布">
+                <div class="dist-label">imp 分布 · 113 条</div>
+                <div class="dist-bar">
+                  <span class="seg s5" style="flex:53"></span>
+                  <span class="seg s4" style="flex:31"></span>
+                  <span class="seg s3" style="flex:15"></span>
+                  <span class="seg s2" style="flex:10"></span>
+                  <span class="seg s1" style="flex:4"></span>
+                </div>
+                <div class="dist-legend">
+                  <span><i class="s5"></i>5 · 53</span>
+                  <span><i class="s4"></i>4 · 31</span>
+                  <span><i class="s3"></i>3 · 15</span>
+                  <span><i class="s2"></i>2 · 10</span>
+                  <span><i class="s1"></i>1 · 4</span>
+                </div>
+              </div>
+              <div class="toolbar"><button class="btn" type="button" data-demo>全部（113）</button></div>
+              <div class="table-wrap mem-table">
+                <table class="table">
+                  <thead><tr><th>imp</th><th>清晰度</th><th>内容</th><th>来源</th><th>出局</th></tr></thead>
+                  <tbody>
+                    <tr><td><span class="imp imp5">5</span></td><td class="mono">1.00</td><td>示例：架构路线定了，先不扩功能，先把数据层收干净。</td><td class="src-cell">owner</td><td class="days never">永不</td></tr>
+                    <tr><td><span class="imp imp4">4</span></td><td class="mono">1.00</td><td>示例：记忆审阅台的目标是「让人管住模型记住什么」。</td><td class="src-cell">owner</td><td class="days never">永不</td></tr>
+                    <tr><td><span class="imp imp3">3</span></td><td class="mono">0.82</td><td>示例：报告先给结论，再展开证据。</td><td class="src-cell">pending</td><td class="days cool">62 天</td></tr>
+                    <tr><td><span class="imp imp2">2</span></td><td class="mono">0.46</td><td>示例：某次会话里踩过一个路径坑。</td><td class="src-cell">decay</td><td class="days warm">18 天</td></tr>
+                    <tr><td><span class="imp imp1">1</span></td><td class="mono">0.21</td><td>示例：临时记下的一条待确认信息。</td><td class="src-cell">pending</td><td class="days hot">4 天</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="logbox">
+                <div class="section-title">最近改动（3 条，最新在上）</div>
+                <div class="logrow"><span class="muted">11-09 14:22</span><span class="logimp">3 → 4</span><span>示例：这条被证明是稳定约定，上调。</span></div>
+                <div class="logrow"><span class="muted">11-08 19:40</span><span class="logimp">2 → 3</span><span>示例：复盘时发现它会影响以后的决策。</span></div>
+                <div class="logrow"><span class="muted">11-07 10:05</span><span class="logimp">1 → 2</span><span>示例：又被提到一次，略升。</span></div>
+              </div>
+              <div class="logbox">
+                <div class="section-title">当前参数（只读，改它要改 memctl.mjs）</div>
+                <div class="params">
+                  <span>imp5 / 4：0.02/天 · floor 0.40 · 永不</span>
+                  <span>imp3：0.05/天 · floor 0.15 · 90 天</span>
+                  <span>imp2 / 1：0.10/天 · floor 0 · 30 天</span>
+                  <span>注入：800 字 · 配额 5:50% 4:35% 3:15% · 2/1 档不占</span>
+                  <span>新近性：创建时间，半衰 14 天，最高加成 +60%</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mem-view" data-memview="long">
+              <div class="memory-subpanel">
+                <p class="lead">只读。facts / self / voices 的正文；写入口仍然只走 pending.mjs / memctl.mjs。</p>
+                <div class="section readme" style="margin-top:0">
+                  <div class="section-title">长期层怎么运作</div>
+                  <p class="lead tight">不会每轮自动注入。facts 是小文件、整本读，agent 在提方案/反驳前读；facts 不进索引。self / voices 进检索索引，recall 命中或自查时读。正常写法是待审页「收进长期」→ pending.mjs；这里只读，不提供编辑。</p>
+                </div>
+                <div class="subtabs" style="margin-top:10px">
+                  <button class="subtab active" type="button" data-long="facts">facts</button>
+                  <button class="subtab" type="button" data-long="self">self</button>
+                  <button class="subtab" type="button" data-long="voices">voices</button>
+                </div>
+                <div class="long-view active" data-longview="facts">
+                  <div class="longview">
+                    <div class="line"><span class="no">1</span><span class="tx"># 长期记忆（facts）</span></div>
+                    <div class="line"><span class="no">2</span><span class="tx"></span></div>
+                    <div class="line"><span class="no">3</span><span class="tx">## 关于用户</span></div>
+                    <div class="line"><span class="no">4</span><span class="tx"></span></div>
+                    <div class="line"><span class="no">5</span><span class="tx">- 示例：喜欢先看结论，再决定要不要展开。</span></div>
+                    <div class="line"><span class="no">6</span><span class="tx">- 示例：对花费敏感，方案先给最小可用。</span></div>
+                    <div class="line"><span class="no">7</span><span class="tx"></span></div>
+                    <div class="line"><span class="no">8</span><span class="tx">## 背景与约定</span></div>
+                    <div class="line"><span class="no">9</span><span class="tx"></span></div>
+                    <div class="line"><span class="no">10</span><span class="tx">- 示例：报告开头先说结论。</span></div>
+                    <div class="line"><span class="no">11</span><span class="tx">- 示例：不确定就说不知道，不要编。</span></div>
+                  </div>
+                </div>
+                <div class="long-view" data-longview="self">
+                  <div class="longview">
+                    <div class="line"><span class="no">1</span><span class="tx"># 我学到的（self）</span></div>
+                    <div class="line"><span class="no">2</span><span class="tx"></span></div>
+                    <div class="line"><span class="no">3</span><span class="tx">## 一、失败模式</span></div>
+                    <div class="line"><span class="no">4</span><span class="tx"></span></div>
+                    <div class="line"><span class="no">5</span><span class="tx">- 示例：上下文太长时，容易把不相干的事接在一起。</span></div>
+                    <div class="line"><span class="no">6</span><span class="tx">- 示例：测试通过不代表路径真的注册了。</span></div>
+                    <div class="line"><span class="no">7</span><span class="tx"></span></div>
+                    <div class="line"><span class="no">8</span><span class="tx">## 二、我学到的</span></div>
+                    <div class="line"><span class="no">9</span><span class="tx"></span></div>
+                    <div class="line"><span class="no">10</span><span class="tx">- 示例：先砍功能，再谈优化。</span></div>
+                  </div>
+                </div>
+                <div class="long-view" data-longview="voices">
+                  <div class="longview">
+                    <div class="line"><span class="no">1</span><span class="tx"># 他的原话（voices）</span></div>
+                    <div class="line"><span class="no">2</span><span class="tx"></span></div>
+                    <div class="line"><span class="no">3</span><span class="tx">## 对我的要求</span></div>
+                    <div class="line"><span class="no">4</span><span class="tx"></span></div>
+                    <div class="line"><span class="no">5</span><span class="tx">| 日期 | 原话 | 情境 |</span></div>
+                    <div class="line"><span class="no">6</span><span class="tx">|---|---|---|</span></div>
+                    <div class="line"><span class="no">7</span><span class="tx">| 示例 | 「先别急着给方案，先问清楚。」 | 需求不清时 |</span></div>
+                    <div class="line"><span class="no">8</span><span class="tx">| 示例 | 「不用附和我。」 | 方案评审时 |</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 备忘 -->
+        <section class="view" data-view="memo">
+          <div class="page-head">
+            <h1><svg class="h-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h8v14l-4-3-4 3z"/><path d="M8 7h4"/></svg>备忘</h1>
+            <p class="lead">还没办完、还没想好的事。状态可以直接在这里改（写入口是 tools/memo.mjs：自动备份 + 原子替换）。</p>
+            <p class="lead">状态含义：⬜ 未做 · 🟨 部分（做了但不完整）· ⏸ 搁置（等条件）· ✅ 完成。改完立刻写回 MEMO.md，那一条会按新状态归到「已完成」或留在待办区。</p>
+          </div>
+          <div class="memo-block">
+            <div class="memo-title">A. 示例待办</div>
+            <table class="table">
+              <thead><tr><th>#</th><th>事项</th><th>卡在哪</th><th class="status-th">状态</th></tr></thead>
+              <tbody>
+                <tr><td class="mono">2</td><td>示例：给检索页补一个索引状态</td><td class="muted">等设计稿</td><td class="status-cell"><select class="memo-select" data-demo-select><option>⬜ 未做</option><option>🟨 部分</option><option>⏸ 搁置</option><option>✅ 完成</option></select></td></tr>
+                <tr><td class="mono">4</td><td>示例：把规则页文案再收一遍</td><td class="muted">等文案确认</td><td class="status-cell"><select class="memo-select" data-demo-select><option>🟨 部分</option><option>⬜ 未做</option><option>⏸ 搁置</option><option>✅ 完成</option></select></td></tr>
+                <tr><td class="mono">6</td><td>示例：补一条空状态说明</td><td class="muted">已完成</td><td class="status-cell"><span class="status-tag st-done">完成</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="memo-block">
+            <div class="memo-title">B. 技术债</div>
+            <table class="table">
+              <thead><tr><th>#</th><th>事项</th><th>为什么该做</th><th class="status-th">状态</th></tr></thead>
+              <tbody>
+                <tr><td class="mono">11</td><td>示例：补一条 UI 文案</td><td class="muted">用户不知道按钮干什么</td><td class="status-cell"><span class="status-tag st-part">部分</span></td></tr>
+                <tr><td class="mono">12</td><td>示例：深色主题过一遍</td><td class="muted">固定色在暗色下偏亮</td><td class="status-cell"><span class="status-tag st-todo">未做</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="done">
+            <button class="done-toggle" type="button"><span class="caret">▸</span>已完成</button>
+            <div class="done-body" hidden>
+              <div class="memo-block" style="margin-top:10px">
+                <div class="memo-title">C. 已完成</div>
+                <table class="table">
+                  <thead><tr><th>#</th><th>事项</th><th>卡在哪</th><th class="status-th">状态</th></tr></thead>
+                  <tbody>
+                    <tr><td class="mono">1</td><td>示例：备忘页可划掉</td><td class="muted">11-08 已做</td><td class="status-cell"><span class="status-tag st-done">完成</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 检索 -->
+        <section class="view" data-view="search">
+          <div class="page-head">
+            <h1><svg class="h-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="4.5"/><path d="M13 13l3.5 3.5"/></svg>检索</h1>
+            <p class="lead">全文检索：文档、日记（如果有）、会话、衰减层、失败模式、原话都在里面。规范层（原话 / 我学到的 / 规则）有加权，体量大的日记和会话会被压一点。</p>
+          </div>
+          <div class="searchbar">
+            <input class="input" placeholder="比如：他说过不用附和 / 自我归罪 / 录音器 bug">
+            <button class="btn primary" type="button" data-demo>搜</button>
+          </div>
+          <div class="hit">
+            <div class="hit-top"><span class="hit-layer">规则</span><span class="hit-head">报告格式 · 开头先说结论</span><span class="hit-score">-12.4</span></div>
+            <div class="hit-body">示例：报告开头先说结论，再展开证据；表格只放对照，其余用短段落。</div>
+            <div class="hit-path">rules.md · 第 3 行</div>
+          </div>
+          <div class="hit">
+            <div class="hit-top"><span class="hit-layer">日记</span><span class="hit-head">示例：今天把数据层收干净了</span><span class="hit-score">-18.1</span></div>
+            <div class="hit-body">示例：先砍功能，再谈优化；能单独装、单独摘。</div>
+            <div class="hit-path">memory/diary/example.md · 2026-11-09</div>
+          </div>
+          <div class="hit">
+            <div class="hit-top"><span class="hit-layer">原话</span><span class="hit-head">「不用附和我。」</span><span class="hit-score">-21.7</span></div>
+            <div class="hit-body">示例：方案评审时，先给判断，再给理由。</div>
+            <div class="hit-path">memory/self/voices.md · 第 7 行</div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+  // 纯视觉预览：没有后端、没有真实数据、不会写入任何文件。
+  const tabs = document.querySelectorAll('.tab');
+  tabs.forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      tabs.forEach(function (t) { t.classList.toggle('active', t === tab); });
+      const name = tab.dataset.tab;
+      document.querySelectorAll('.view').forEach(function (v) {
+        v.classList.toggle('active', v.dataset.view === name);
+      });
+    });
+  });
+
+  document.querySelectorAll('[data-mem]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('[data-mem]').forEach(function (b) { b.classList.toggle('active', b === btn); });
+      document.querySelectorAll('[data-memview]').forEach(function (v) {
+        v.classList.toggle('active', v.dataset.memview === btn.dataset.mem);
+      });
+    });
+  });
+
+  document.querySelectorAll('[data-long]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('[data-long]').forEach(function (b) { b.classList.toggle('active', b === btn); });
+      document.querySelectorAll('[data-longview]').forEach(function (v) {
+        v.classList.toggle('active', v.dataset.longview === btn.dataset.long);
+      });
+    });
+  });
+
+  document.querySelectorAll('.done-toggle').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const body = btn.parentElement.querySelector('.done-body');
+      const caret = btn.querySelector('.caret');
+      if (!body) return;
+      body.hidden = !body.hidden;
+      if (caret) caret.classList.toggle('open', !body.hidden);
+    });
+  });
+
+  const auditBtn = document.getElementById('auditBtn');
+  if (auditBtn) auditBtn.addEventListener('click', function () {
+    const box = document.getElementById('auditResult');
+    if (box) box.hidden = !box.hidden;
+    toast(box && !box.hidden ? '预览：已显示模拟重复结果' : '预览：已收起模拟结果');
+  });
+
+  const themeBtn = document.getElementById('themeBtn');
+  themeBtn.addEventListener('click', function () {
+    const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    document.documentElement.setAttribute('data-theme', dark ? 'light' : 'dark');
+    themeBtn.textContent = dark ? '深色' : '浅色';
+  });
+
+  const toastEl = document.getElementById('toast');
+  let toastTimer = null;
+  function toast(message) {
+    toastEl.textContent = message;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.classList.remove('show'); }, 1800);
+  }
+  document.querySelectorAll('[data-demo]').forEach(function (btn) {
+    btn.addEventListener('click', function () { toast('预览模式：这里不会写入任何东西'); });
+  });
+  document.querySelectorAll('[data-demo-select]').forEach(function (sel) {
+    sel.addEventListener('change', function () { toast('预览模式：状态不会保存'); });
+  });
+
+  // 直接预览某一页 / 深色：ui-preview.html?tab=memory&theme=dark&mem=long
+  const params = new URLSearchParams(location.search);
+  if (params.get('theme') === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    themeBtn.textContent = '浅色';
+  }
+  const initialTab = params.get('tab');
+  if (initialTab) {
+    const t = document.querySelector('.tab[data-tab="' + initialTab + '"]');
+    if (t) t.click();
+  }
+  const initialMem = params.get('mem');
+  if (initialMem) {
+    const m = document.querySelector('[data-mem="' + initialMem + '"]');
+    if (m) m.click();
+  }
+</script>
+</body>
+</html>

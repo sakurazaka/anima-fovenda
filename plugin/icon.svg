@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Memory Review Console">
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="#2f6feb"/>
+  <path d="M18 22h22" stroke="#ffffff" stroke-width="5" stroke-linecap="round" opacity="0.95"/>
+  <path d="M18 32h16" stroke="#ffffff" stroke-width="5" stroke-linecap="round" opacity="0.8"/>
+  <path d="M18 42h9" stroke="#ffffff" stroke-width="5" stroke-linecap="round" opacity="0.65"/>
+  <path d="M38 40l5 5 8-10" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
