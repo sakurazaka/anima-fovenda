@@ -6,11 +6,11 @@
   "author": "桜坂珠洲音",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/REPLACE-ME/anima-fovenda.git"
+    "url": "git+https://github.com/sakurazaka/anima-fovenda.git"
   },
-  "homepage": "https://github.com/REPLACE-ME/anima-fovenda#readme",
+  "homepage": "https://github.com/sakurazaka/anima-fovenda#readme",
   "bugs": {
-    "url": "https://github.com/REPLACE-ME/anima-fovenda/issues"
+    "url": "https://github.com/sakurazaka/anima-fovenda/issues"
   },
   "keywords": [
     "deepseek-harness",
