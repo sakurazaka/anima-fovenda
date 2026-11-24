@@ -1,2 +1,7 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# 仓库里一律 LF（Windows 上不改行为，只是让 diff 干净）
+* text=auto eol=lf
+
+# 二进制，别做换行转换
+*.png binary
+*.zip binary
+*.ico binary

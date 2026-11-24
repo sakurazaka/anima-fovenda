@@ -5,9 +5,6 @@
  * 数据走 host 注册的 /anima-fovenda/api，动作也走它（host 那边 spawn CLI）。
  */
 window.__ModuleLoader__.load({
-  // 必须与 package.json 的 name、cordis.patch.yml 的 bundle id 一致（`anima-fovenda`）。
-  // 现役部署那份用的是 `@local/anima-fovenda`（profile 里按这个名 link），
-  // 但发布包不能带 `@local/` 前缀 —— 否则客户端加载器按 name 查注册会查不到（0.2.6 的事故）。
   id: 'anima-fovenda',
   factory(require) {
     const React = require('react')

@@ -439,8 +439,7 @@ python 解释器的位置**不硬编码**：问仓库里的运行时探测脚本
   pending.mjs               候选队列状态机
   memctl.mjs                记忆增删改 / 衰减 / 注入
   mem-index.py              索引 build / recall
-  rt.mjs                    运行时探测（node / python 在哪）——**本机可选**，不进发布包；
-                            它硬编码了作者机器的 ~/.dsh 路径。插件探不到时会降级自己找 python。
+  rt.mjs                    运行时探测（node / python 在哪）
 ```
 
 ---

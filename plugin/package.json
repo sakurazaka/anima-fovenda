@@ -1,6 +1,7 @@
 {
   "name": "anima-fovenda",
   "version": "0.2.8",
+  "private": true,
   "type": "module",
   "description": "Memory review console as a DeepSeek Harness panel: pending facts, decay, facts/self/voices, memo, rules, and search.",
   "license": "MIT",
@@ -31,11 +32,15 @@
     "LICENSE"
   ],
   "dsh": {
-    "bundle": { "patch": "./cordis.patch.yml" },
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
     "client": {
       "platform": "web",
       "immediately": true,
-      "inject": ["@deepseek-ai/dsh-client-ui-conversation"]
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-conversation"
+      ]
     }
   }
 }

@@ -457,7 +457,7 @@
         <section class="view" data-view="memory">
           <div class="page-head">
             <h1><svg class="h-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3l7 3.5-7 3.5-7-3.5L10 3z"/><path d="M3 10l7 3.5 7-3.5"/><path d="M3 13.5l7 3.5 7-3.5"/></svg>记忆</h1>
-            <p class="lead">这一页看两层：衰减层是带权重、会出局的日常记忆；长期层是 facts / self / voices，只读。imp 越高越重要、越抗衰减，低 imp 才会先出局；标签颜色按危险度走：蓝/青=稳，灰=中间，橙/红=接近出局。写入口仍然只走 pending.mjs / memctl.mjs。</p>
+            <p class="lead">这一页看两层：衰减层是带权重、会归档的日常记忆；长期层是 facts / self / voices，只读。imp 越高越重要、越抗衰减，低 imp 才会先归档；标签颜色按危险度走：蓝/青=稳，灰=中间，橙/红=接近归档。写入口仍然只走 pending.mjs / memctl.mjs。</p>
           </div>
           <div class="memory-panel">
             <div class="subtabs">
@@ -466,11 +466,11 @@
             </div>
 
             <div class="mem-view active" data-memview="decay">
-              <p class="lead">共 113 条，其中 imp ≥ 4 的 84 条永不自动出局；被读到会续命，久不读会掉清晰度。</p>
-              <p class="lead">「出局」列按 memctl 的规则算：clarity 掉到门槛、且满足年龄条件，才移出衰减层（全量档里还在）。门槛是 max(0.1, 该档下限)：imp≤2 是 0.1（30 天）、imp3 是 0.15（90 天）、imp≥4 永不。所以现在真正会出局的是 29 条。</p>
-              <p class="lead">左边那个数字可以改：imp 是我给的估计，估错了你直接调。改它有两个后果 —— 寿命（掉多快、会不会出局）和注入优先级（会挤占注入预算；本机是每天一次的自动化任务按 800 字注入，其他部署按自己的注入配置）。每次改动都记在 imp-log.jsonl。</p>
+              <p class="lead">共 113 条，其中活跃 111 条、归档 2 条；imp ≥ 4 的 84 条永不自动归档，被读到会续命，久不读会掉清晰度。</p>
+              <p class="lead">「距归档」列按 memctl 的规则算：clarity 掉到门槛、且满足年龄条件，才移出活跃层（仍在 decay 档，不再注入）。门槛是 max(0.1, 该档下限)：imp≤2 是 0.1（30 天）、imp3 是 0.15（90 天）、imp≥4 永不。现在会归档的是 29 条。</p>
+              <p class="lead">左边那个数字可以改：imp 是我给的估计，估错了你直接调。改它有两个后果 —— 寿命（掉多快、会不会归档）和注入优先级（会挤占注入预算；本机是每天一次的自动化任务按 800 字注入，其他部署按自己的注入配置）。每次改动都记在 imp-log.jsonl。</p>
               <div class="dist" aria-label="imp 分布">
-                <div class="dist-label">imp 分布 · 113 条</div>
+                <div class="dist-label">imp 分布 · 活跃 111 条</div>
                 <div class="dist-bar">
                   <span class="seg s5" style="flex:53"></span>
                   <span class="seg s4" style="flex:31"></span>
@@ -489,7 +489,7 @@
               <div class="toolbar"><button class="btn" type="button" data-demo>全部（113）</button></div>
               <div class="table-wrap mem-table">
                 <table class="table">
-                  <thead><tr><th>imp</th><th>清晰度</th><th>内容</th><th>来源</th><th>出局</th></tr></thead>
+                  <thead><tr><th>imp</th><th>清晰度</th><th>内容</th><th>来源</th><th>距归档</th></tr></thead>
                   <tbody>
                     <tr><td><span class="imp imp5">5</span></td><td class="mono">1.00</td><td>示例：架构路线定了，先不扩功能，先把数据层收干净。</td><td class="src-cell">owner</td><td class="days never">永不</td></tr>
                     <tr><td><span class="imp imp4">4</span></td><td class="mono">1.00</td><td>示例：记忆审阅台的目标是「让人管住模型记住什么」。</td><td class="src-cell">owner</td><td class="days never">永不</td></tr>
