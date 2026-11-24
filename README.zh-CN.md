@@ -40,10 +40,11 @@ LICENSE
 node runtime\tools\init.mjs D:\anima-data
 xcopy runtime\tools\* D:\anima-data\tools\ /E /I /Y
 copy runtime\memctl.mjs D:\anima-data\
-xcopy runtime\identity\* D:\anima-data\identity\ /E /I /Y
 ```
 
-`init.mjs` 会建 `memory/`、`MEMO.md`、`CHANGELOG.md`，不会覆盖已有文件。`identity` 模板是空的：人格和规则要自己填。
+`init.mjs` 会建 `memory/`、`identity/`、`MEMO.md`、`CHANGELOG.md`，不会覆盖已有文件。
+
+生成的东西分两类：**带结构模板的**（`facts.md`、`self/self.md`、`self/voices.md`、`ops.md`、`MEMO.md`、四个 `.jsonl`）和**空的**（`identity/persona.md`、`identity/rules.md`——人格和规则要自己填）。所以包里不带这些文件，一律以 `init.mjs` 生成的为准。
 
 ### 人格注入（可选）
 
@@ -278,7 +279,7 @@ node runtime\tools\test-rules.mjs
 
 ## 把包交给别人时
 
-这个包本身不含任何真实数据（`runtime/identity/*.md` 是 0 字节）。但如果是从**自己的部署目录**打包或压缩后发给别人，注意排除：
+这个包本身不含任何真实数据，也**不含任何模板文件**——`identity/` 和记忆层的空壳都由 `init.mjs` 生成。但如果是从**自己的部署目录**打包或压缩后发给别人，注意排除：
 
 - `memory/raw/` —— 完整捕获了你自己和助手的所有原文，没有脱敏；
 - `memory/` 下其它派生数据（`decay.jsonl`、`facts.md`、`self/`、`daily/`）与 `MEMO.md`；

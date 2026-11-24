@@ -45,10 +45,11 @@ Open a terminal at the package root. Replace `D:\anima-fovenda` and `D:\anima-da
 node runtime\tools\init.mjs D:\anima-data
 xcopy runtime\tools\* D:\anima-data\tools\ /E /I /Y
 copy runtime\memctl.mjs D:\anima-data\
-xcopy runtime\identity\* D:\anima-data\identity\ /E /I /Y
 ```
 
-`init.mjs` creates the memory directory, `MEMO.md`, and `CHANGELOG.md`. It does not overwrite existing files. The identity templates are empty: put your own persona and rules there.
+`init.mjs` creates `memory/`, `identity/`, `MEMO.md` and `CHANGELOG.md`, and never overwrites an existing file.
+
+It seeds two kinds of files: **structured templates** (`facts.md`, `self/self.md`, `self/voices.md`, `ops.md`, `MEMO.md`, the four `.jsonl` files) and **empty ones** (`identity/persona.md`, `identity/rules.md` — write your own). The package deliberately ships none of them; `init.mjs` is the single source of truth.
 
 ### Persona injection (optional)
 
@@ -292,7 +293,7 @@ node runtime\tools\test-rules.mjs
 
 ## Handing this to someone else
 
-The package itself contains no real data (`runtime/identity/*.md` are 0 bytes). If you pack or zip from **your own deployment directory**, exclude:
+The package itself contains no real data and **no template files at all** — `identity/` and the memory stubs are created by `init.mjs`. If you pack or zip from **your own deployment directory**, exclude:
 
 - `memory/raw/` — captures every user and assistant message verbatim, with no redaction;
 - the rest of `memory/` (`decay.jsonl`, `facts.md`, `self/`, `daily/`) and `MEMO.md`;

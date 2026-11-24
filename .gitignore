@@ -3,7 +3,8 @@ node_modules/
 *.log
 
 # 运行时数据（绝不该进仓库）
-# 注意：用 / 前缀锚定到仓库根，否则会误伤 runtime/identity/ 里的空模板
+# 用 / 前缀锚定到仓库根：只在仓库根有 identity/ memory/ 时才忽略，
+# 不会误伤子路径（比如以后的 runtime/something/identity/）
 /data/
 /memory/
 /identity/

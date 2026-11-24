@@ -1,6 +1,6 @@
 {
   "name": "anima-fovenda",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "type": "module",
   "description": "Memory review console as a DeepSeek Harness panel: pending facts, decay, facts/self/voices, memo, rules, and search.",
   "license": "MIT",

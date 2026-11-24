@@ -1,6 +1,6 @@
 {
   "name": "anima-fovenda",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "description": "Memory review console for DeepSeek Harness: pending facts, decay, facts/self/voices, memo, rules, and search.",
   "license": "MIT",
   "author": "桜坂珠洲音",

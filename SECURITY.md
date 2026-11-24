@@ -39,7 +39,7 @@ Anima Fovenda 是本地跑的 DSH 插件：它读写你本机的记忆文件，�
 | `identity/persona.md`、`rules.md` | 人设与纪律（等于你的提示词） |
 | `*/MEMO.md`、`CHANGELOG.md` | 备忘与变更史 |
 
-发布包本身**不含**这些：`runtime/identity/*.md` 是 0 字节模板，包内没有任何真实记忆。
+发布包本身**不含**这些，也**不含任何模板文件**：`identity/`、`memory/` 里的空壳全部由 `init.mjs` 现建，包内没有任何真实记忆。
 
 ---
 

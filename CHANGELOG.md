@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.8 — 2026-11-25
+
+`init.mjs` 成为模板的唯一来源，并修了两处跟当前代码不一致的旧结构。
+
+- **`init.mjs` 现在也生成 `identity/`**：`identity/persona.md`、`identity/rules.md`（空文件）。此前身份模板靠包里 `runtime/identity/*.md` 现拷，而 `facts.md` / `self/` / `voices.md` 等靠 `init.mjs` 生成——同一类东西两处来源。现在**包里不再带任何模板文件**，一律以 `init.mjs` 为准。
+- **修 `memory/handoff.md` → `memory/handoff/`**：`paths.mjs` 里的 `handoff` 从 2026-11-24 起已经是目录（一个项目一份），但 `init.mjs` 还在生成单文件，新装的人会拿到一个没人读的死文件。现在生成目录 + 一份说明 `README.md`。
+- **补 `memory/timeline/`**：0.2.5 加的每日时间线要写到这个目录，此前 `init.mjs` 不建它。
+- 文档同步：安装步骤去掉 `xcopy runtime\identity\*`；README 与 SECURITY 里「`runtime/identity/*.md` 是 0 字节模板」改成「包里不含任何模板文件，全部由 `init.mjs` 生成」。
+
 ## 0.2.7 — 2026-11-25
 
 修一个会让插件**在第三方机器上直接加载失败**的打包错误。

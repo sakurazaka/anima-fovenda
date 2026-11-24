@@ -44,17 +44,23 @@ function seed(p, content) {
 }
 
 const DIRS = [
+  'identity',
   'memory',
   'memory/self',
   'memory/persona.snapshots',
   'memory/index',
   'memory/daily',
+  'memory/timeline',
+  'memory/handoff',
   'memory/.pre-route',
   'backup',
   'tools',
 ]
 
 const FILES = {
+  // 身份层也由 init 生成，包里不再带 0 字节模板（2026-11-25）
+  'identity/persona.md': '',
+  'identity/rules.md': '',
   'memory/decay.jsonl': '',
   'memory/full.jsonl': '',
   'memory/pending-facts.jsonl': '',
@@ -104,10 +110,13 @@ const FILES = {
     '> 按需查标题，别整本读。',
     '',
   ].join('\n'),
-  'memory/handoff.md': [
+  // 交接包是目录（2026-11-24 起，一个项目一份）；不再生成单文件 memory/handoff.md
+  'memory/handoff/README.md': [
     '# 交接包（handoff）',
     '',
-    '> 换新会话时，开场只读这份。',
+    '> 换新会话时，开场只读这里。',
+    '> 一个项目一份：`<项目名>.md`，例如 `anima-fovenda.md`。',
+    '> 只写「目标 / 现在卡在哪 / 下一步 / 相关文件」，不写过程。',
     '',
   ].join('\n'),
   'MEMO.md': [
