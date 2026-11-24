@@ -3,9 +3,12 @@ node_modules/
 *.log
 
 # 运行时数据（绝不该进仓库）
-data/
-memory/
-identity/
+# 注意：用 / 前缀锚定到仓库根，否则会误伤 runtime/identity/ 里的空模板
+/data/
+/memory/
+/identity/
+MEMO.md
+CHANGELOG.local.md
 
 # 备份与临时文件
 *.bak
