@@ -1,5 +1,7 @@
 # Anima Fovenda
 
+> **Shared as-is.** This is a personal tool published for reading and forking: **Issues are disabled and PRs are not reviewed.** If you need it to behave differently, fork it and change it.
+>
 > **Early release (0.2.x). Interfaces may change between minor versions.** Things that have moved recently: `memctl add` now needs `--by owner` or `--from-pending`, and `paths.mjs` exposes `P.handoff` as a directory. Read `CHANGELOG.md` before upgrading.
 
 A memory-review console for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness). One sidebar panel, six tabs: pending facts, persona snapshot diff, rules, decay/long-term memory, memo, and search.
@@ -8,10 +10,37 @@ A memory-review console for [DeepSeek Harness](https://github.com/deepseek-ai/de
 
 The plugin is deliberately **read-mostly**: memory files are written through the CLI, not by the browser. The rules file is the one editable text surface, with backups and mtime conflict detection.
 
-- **License:** MIT
-- **Author:** 桜坂珠洲音
-- **Package:** `anima-fovenda`
-- **API:** `/anima-fovenda/api`
+## How it differs from other memory setups
+
+Every row below comes from one goal: **keeping persona and memory continuous and correct** — not making the model remember more, but keeping *who remembers, what is remembered, and when it is forgotten* open to review and correction.
+
+| Dimension | Usually | Here |
+|---|---|---|
+| Writing | auto-extract, auto-distill | **pending buffer**: the model only proposes; nothing reaches the hot layer until a human accepts it |
+| Per-turn cost | auto-retrieve and inject one reference every turn | injects only persona / rules and a skeleton; details are pulled on demand (`recall`, `session-digest`) |
+| Where it lives | vector DB / hosted service / one database | one file per kind: hot layer, long-term facts, verbatim quotes, ops notes, changelog — readable with `cat`, diffable, movable |
+| Retrieval | embeddings (extra service, extra cost) | local SQLite FTS5 + jieba + per-layer weights — offline, 0 tokens |
+| Granularity | branch-level / state-level (merge, freeze) | **entry-level**: reject one, reweight one |
+| Growth | append-only, gets noisy | decay: important entries bottom out but never vanish; low ones age into an archive, and **archiving deletes nothing** |
+| Observability | a state snapshot, if anything | six tabs act as a health dashboard: pending, hot layer, long-term, persona diff, search, memo |
+| Side effects | written quietly in the background | one write path (`memctl`); every importance change logged to `imp-log.jsonl` and auditable |
+| Dependencies | a pile of npm packages | zero npm dependencies; Python is needed only for the search layer |
+
+### Trade-offs, and the levers they leave you
+
+Every unusual choice above points at the same goal: **keeping persona and memory continuous and correct** — not letting the model run as fast as it can on its own. The price is less automation; what you buy is that **control never leaves your hands**.
+
+- **The queue ignores provenance** (small talk and real decisions queue alike). That is deliberate: what matters is not *what enters the queue*, but **who decides where it goes** — you, or you and the agent together.
+- **Decay is not in the system prompt.** It is a memory block pulled once a night, not injected every turn. So a badly written entry cannot contaminate every turn on the spot; when you spot something wrong in the console you can look, ask the agent to cross-check, and prune.
+- **No in-window cutting**: after a topic switch the old material stays in context. Want it clean? Open a new window and use the handoff — an explicit action, not an automatic guess.
+- **Nobody at the desk, nothing in the hot layer.** That is the cost, and also the guarantee: nothing can slip past your judgement into the hot layer.
+
+In one line: **automation traded for stability, levers kept for correction.** This is not "smarter memory" — it is memory you can audit and prune.
+
+**An example**: one day an important entry is archived by mistake. A tier count in the routine check drops while the change log shows nothing — numbers that disagree are the lead. Follow the id, see the whole trail, restore from backup, add an assertion so it cannot recur. Black boxes fail too; they just do not tell you, and they do not hand you an id.
+
+**License:** MIT · **Author:** 桜坂珠洲音 · **Package:** `anima-fovenda` · **API:** `/anima-fovenda/api`
+
 - **Data root:** set with `ANIMA_DATA` or `ANIMA_PATHS`; the plugin does not guess a home directory.
 - **Security:** read [SECURITY.md](SECURITY.md) first — the local API has **no token auth**.
 
@@ -272,6 +301,36 @@ python D:\anima-data\tools\mem-index.py build --docs
 If you do use an OS scheduler: its environment differs from your shell — PATH usually lacks node/python, so use absolute paths; point `PYTHONPATH` at `tools\pylibs` and set `PYTHONIOENCODING=utf-8`.
 
 Scheduled tasks have a different environment: PATH often lacks node/python, so use absolute paths; set `PYTHONPATH` to `tools\pylibs` and `PYTHONIOENCODING=utf-8`.
+
+## Let the machine keep watch (optional)
+
+`tools\check-open.mjs` turns "an error was reported" into **state**. A failing check is registered; every later run mentions it again; a passing check **closes it automatically** — nobody has to remember to delete it, because "waiting for someone to delete" and "waiting for someone to read the report" are the same dependency.
+
+```bat
+node D:\anima-data\tools\check-open.mjs          :: run, print what is still open
+node D:\anima-data\tools\check-open.mjs list     :: just show the ledger
+node D:\anima-data\tools\check-open.mjs --json   :: for scheduled jobs
+```
+
+Four built-in mechanical checks (no model judgement needed):
+
+| key | assertion |
+|---|---|
+| `imp_ge4_archived` | no entry with `imp>=4` sits in the archive |
+| `decay_subset_full` | every `decay` entry exists in `full` |
+| `index_present` | the index file exists and is not an empty shell (< 8 KB means empty) |
+| `pending_dup` | the pending queue holds no duplicated text |
+
+The ledger is `memory\open-issues.jsonl` (key / first seen / times seen / how to fix); closed items are archived to `open-issues-closed.jsonl`. Anything open for more than 3 days is flagged.
+
+Problems a machine cannot judge can be registered by hand:
+
+```bat
+node D:\anima-data\tools\check-open.mjs add --key my_check --what "symptom" --how "how to fix"
+node D:\anima-data\tools\check-open.mjs close my_check --why "fixed"
+```
+
+**Worth running as step 0 of your scheduled job**: run it first, copy the `open` array into that day's "anomalies" section. If nobody reads the report, nothing is lost — it keeps repeating until fixed.
 
 ## Security
 
