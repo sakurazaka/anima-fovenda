@@ -10,7 +10,7 @@ A memory-review console for [DeepSeek Harness](https://github.com/deepseek-ai/de
 
 The plugin is deliberately **read-mostly**: memory files are written through the CLI, not by the browser. The rules file is the one editable text surface, with backups and mtime conflict detection.
 
-**Any session can pick up any earlier topic** — not because it was stuffed into the context, but because it can be looked up: a skeleton per day, an index per word, conclusions in a shared layer.
+**Any session can pick up any earlier topic** — not because it was stuffed into the context, but because it can be looked up: a skeleton per day, an index per word, conclusions in a shared layer. What carries over is **facts and reasons**; the mood of that day is not in there — read the diary for that.
 
 ## How it differs from other memory setups
 
@@ -35,6 +35,7 @@ Every unusual choice above points at the same goal: **keeping persona and memory
 - **The queue ignores provenance** (small talk and real decisions queue alike). That is deliberate: what matters is not *what enters the queue*, but **who decides where it goes** — you, or you and the agent together.
 - **Decay is not in the system prompt.** It is a memory block pulled once a night, not injected every turn. So a badly written entry cannot contaminate every turn on the spot; when you spot something wrong in the console you can look, ask the agent to cross-check, and prune.
 - **No in-window cutting**: after a topic switch the old material stays in context. Want it clean? Open a new window and use the handoff — an explicit action, not an automatic guess.
+- **Mood stays out of the context.** Verbatim words live in `raw`, feelings live in the diary; neither is injected. First, because compressing a feeling into a label is already fabrication; second, because loading a pile of emotion into the context breaks judgement before it helps it. To restore how a day felt, read the diary — do not ask the model to guess.
 - **Nobody at the desk, nothing in the hot layer.** That is the cost, and also the guarantee: nothing can slip past your judgement into the hot layer.
 
 In one line: **automation traded for stability, levers kept for correction.** This is not "smarter memory" — it is memory you can audit and prune.
