@@ -10,6 +10,8 @@ A memory-review console for [DeepSeek Harness](https://github.com/deepseek-ai/de
 
 The plugin is deliberately **read-mostly**: memory files are written through the CLI, not by the browser. The rules file is the one editable text surface, with backups and mtime conflict detection.
 
+**Any session can pick up any earlier topic** — not because it was stuffed into the context, but because it can be looked up: a skeleton per day, an index per word, conclusions in a shared layer.
+
 ## How it differs from other memory setups
 
 Every row below comes from one goal: **keeping persona and memory continuous and correct** — not making the model remember more, but keeping *who remembers, what is remembered, and when it is forgotten* open to review and correction.
