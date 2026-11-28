@@ -12,7 +12,7 @@ import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { rate, floor, exitAge, TOUCH_GAIN } from '../memctl.mjs'
+import { rate, floor, exitAge, TOUCH_GAIN, shouldArchive } from '../memctl.mjs'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const NODE = process.execPath
@@ -54,6 +54,16 @@ const decay = (imp, days) => {
 ok(decay(5, 200) >= 0.4, 'imp=5 衰减 200 天后仍 ≥0.4', 'got ' + decay(5, 200))
 ok(decay(3, 200) >= 0.15, 'imp=3 衰减 200 天后仍 ≥0.15', 'got ' + decay(3, 200))
 ok(decay(2, 30) <= 0.1, 'imp=2 30 天后确实会变淡', 'got ' + decay(2, 30))
+
+// 2026-11-28：归档门槛曾经把整条记录传给 exitAge()，于是 imp>=4 的「永不」失效。
+// 这里直接测 shouldArchive：造一条「clarity 已见底 + 龄很长」的记录。
+const oldRec = (imp, days, clarity) => ({ id: 'x', imp, clarity, at: new Date(Date.now() - days * 86400000).toISOString() })
+ok(shouldArchive(oldRec(5, 200, 0.4)) === false, 'imp=5 见底且龄 200 天：不归档')
+ok(shouldArchive(oldRec(4, 200, 0.4)) === false, 'imp=4 见底且龄 200 天：不归档')
+ok(shouldArchive(oldRec(3, 40, 0.15)) === false, 'imp=3 龄 40 天：还不够 90 天，不归档')
+ok(shouldArchive(oldRec(3, 100, 0.15)) === true, 'imp=3 龄 100 天：归档')
+ok(shouldArchive(oldRec(2, 40, 0.1)) === true, 'imp=2 龄 40 天：归档')
+ok(shouldArchive(oldRec(2, 10, 0.1)) === false, 'imp=2 龄 10 天：太新，不归档')
 
 // ── 二、待审队列的闸 ─────────────────────────
 const pending = path.join(here, 'pending.mjs')

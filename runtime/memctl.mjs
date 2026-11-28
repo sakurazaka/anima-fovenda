@@ -37,10 +37,25 @@ const append = (f, obj) => fs.appendFileSync(f, JSON.stringify(obj) + '\n')
 export const rate = (imp) => (imp >= 4 ? 0.02 : imp === 3 ? 0.05 : 0.1)
 // 下限：重要度高的不会掉到看不见
 export const floor = (imp) => (imp >= 4 ? 0.4 : imp === 3 ? 0.15 : 0)
-// 归档年龄门槛（天）：只有 imp<=2 才 30 天清场
+// 归档年龄门槛（天）：imp>=4 永不自动归档，imp=3 要 90 天，imp<=2 30 天
 export const exitAge = (imp) => (imp >= 4 ? Infinity : imp === 3 ? 90 : 30)
 // 读取时续命
 export const TOUCH_GAIN = 0.15
+
+// 衰减一步后的 clarity（只算数值，不改状态）
+export const nextClarity = (r) => Math.max(floor(r.imp), Number(r.clarity) - rate(r.imp))
+
+// 归档门槛：必须跟 floor 对齐，否则 imp=3 永远掉不到 0.1、exitAge(3) 是死代码。
+// 2026-11-28 修：原来 decay() 里写的是 exitAge(r) —— 传了整个记录，函数拿到的不是数字，
+// `r >= 4` 是 NaN，于是所有条目都按 30 天走，imp>=4 的「永不」形同虚设。
+// 现在抽成纯函数，参数只认 r.imp，并且可以被 test-rules 直接测。
+export function shouldArchive(r, now = Date.now()) {
+  const gate = Math.max(0.1, floor(r.imp))
+  if (nextClarity(r) > gate) return false
+  const ageMs = now - new Date(r.at).getTime()
+  const ageDays = ageMs / 86400000
+  return ageDays >= exitAge(r.imp)
+}
 const ageDays = (r) => (Date.now() - new Date(r.lastUsed || r.at).getTime()) / 86400000
 
 function add(text, { imp = 2, src = 'manual', kind = 'event', ref = null, by = null, fromPending = false } = {}) {
@@ -74,13 +89,8 @@ function decay() {
   for (const r of rows) {
     // 已经归档的条目不再反复计算；它仍在 decay 文件里，可查、可恢复
     if (r.state === 'archived') { out.push(r); continue }
-    const next = Math.max(floor(r.imp), Number(r.clarity) - rate(r.imp))
-    // 2026-11-07 修：归档门槛必须跟 floor 对齐。
-    // 原来固定用 0.1，但 imp=3 的 floor 是 0.15 —— 永远掉不到 0.1，于是 exitAge(3)=90 天是死代码，
-    // 表现就是"imp3 也永不"。改成 max(0.1, floor) 之后：imp≤2 仍是 0.1（行为不变），
-    // imp=3 掉到 0.15 封顶、满 90 天归档，imp≥4 的 exitAge 是 Infinity 所以照样永不。
-    const gate = Math.max(0.1, floor(r.imp))
-    if (next <= gate && ageDays(r) >= exitAge(r)) {
+    const next = nextClarity(r)
+    if (shouldArchive(r)) {
       faded += 1
       // 2026-11-10 #66：归档不删除，改成 archived；仍在 decay 档，注入跳过。
       out.push({ ...r, clarity: Number(next.toFixed(2)), state: 'archived', archivedAt: new Date().toISOString() })
@@ -112,7 +122,11 @@ function scoreOf(r, now = Date.now()) {
 }
 
 function inject(budget = 800) {
-  const all = readJsonl(DECAY).filter((r) => r.state !== 'archived')
+  // 2026-11-28 修：这里以前是 readJsonl(DECAY).filter(非归档)，然后又把这个结果整个写回文件，
+  // 于是每跑一次 inject，归档条目就从 decay.jsonl 里被物理删掉——「归档不删除、可恢复」形同虚设
+  // （11-28 19:35 那次就删掉了 22 条）。现在整份读进来，只在写回时改被读到的条目。
+  const rowsAll = readJsonl(DECAY)
+  const all = rowsAll.filter((r) => r.state !== 'archived')
   const now = Date.now()
   const rows = all
     .filter((r) => r.clarity > 0.1 && (TIER_CAP[r.imp] ?? 0) > 0)
@@ -142,7 +156,8 @@ function inject(budget = 800) {
   // 续命：读到的条目 clarity 回升，lastUsed 刷新
   if (touched.size) {
     const stamp = new Date().toISOString()
-    const updated = all.map((r) => touched.has(r.id)
+    // 整份写回：归档条目原样带过去，一个都不少
+    const updated = rowsAll.map((r) => touched.has(r.id)
       ? { ...r, clarity: Number(Math.min(1, Number(r.clarity) + TOUCH_GAIN).toFixed(2)), lastUsed: stamp }
       : r)
     writeJsonl(DECAY, updated)
