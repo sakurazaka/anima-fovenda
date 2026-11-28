@@ -1,5 +1,7 @@
 # Anima Fovenda
 
+![Anima Fovenda — 记忆层](docs/banner.jpg)
+
 > **只作分享，原样提供。** 这是自用工具，公开是为了让人看和 fork：**不接 issue，不看 PR**。想改就自己 fork。
 >
 > **早期版本（0.2.x），接口可能变。** 最近挪过位置的东西：`memctl add` 现在要 `--by owner` 或 `--from-pending`；`paths.mjs` 的 `P.handoff` 是目录。升级前先看 `CHANGELOG.md`。
@@ -51,6 +53,7 @@ DSH（DeepSeek Harness）的记忆审阅台：侧栏一个面板，六个 tab �
 plugin/           DSH 插件（host + Web client + locale + icon）
 runtime/          CLI 工具 + 空 identity 模板
 preview/          静态 HTML 预览，无后端、无真实数据
+docs/             README 头图（banner.jpg / social-preview.png）
 unit-test.mjs     客户端纯函数测试
 LICENSE
 ```

@@ -1,5 +1,7 @@
 # Anima Fovenda
 
+![Anima Fovenda — a memory layer](docs/banner.jpg)
+
 > **Shared as-is.** This is a personal tool published for reading and forking: **Issues are disabled and PRs are not reviewed.** If you need it to behave differently, fork it and change it.
 >
 > **Early release (0.2.x). Interfaces may change between minor versions.** Things that have moved recently: `memctl add` now needs `--by owner` or `--from-pending`, and `paths.mjs` exposes `P.handoff` as a directory. Read `CHANGELOG.md` before upgrading.
@@ -53,6 +55,7 @@ In one line: **automation traded for stability, levers kept for correction.** Th
 plugin/           DSH plugin (host + Web client + locale + icon)
 runtime/          CLI tools and empty identity templates
 preview/          static HTML mock; no backend, no real data
+docs/             README banner (banner.jpg / social-preview.png)
 unit-test.mjs     pure client tests
 LICENSE
 ```

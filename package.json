@@ -26,6 +26,7 @@
     "plugin",
     "runtime",
     "preview",
+    "docs",
     "unit-test.mjs",
     "README.md",
     "README.zh-CN.md",
